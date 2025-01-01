@@ -1,28 +1,19 @@
 import 'package:flutter/material.dart';
-import '../services/joke_service.dart';
 import '../models/jokes.dart';
 import '../services/firebase_service.dart';
 
-class JokesListScreen extends StatefulWidget {
-  final String type;
-  JokesListScreen({super.key, required this.type});
-
-  @override
-  _JokesListScreenState createState() => _JokesListScreenState();
-}
-
-class _JokesListScreenState extends State<JokesListScreen> {
-  final JokeService jokeService = JokeService();
+class FavoriteJokesScreen extends StatelessWidget {
   final FirebaseService firebaseService = FirebaseService();
-  Set<int> favoritedJokes = {}; // To track the favorited jokes
+
+  FavoriteJokesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.type} Jokes'),
-        backgroundColor: Colors.yellow[100],
-        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text('Favorite Jokes'),
+        backgroundColor: Colors.yellow[100], // App bar background color matching the card color
+        iconTheme: const IconThemeData(color: Colors.black), // Set app bar icons to black
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -31,24 +22,22 @@ class _JokesListScreenState extends State<JokesListScreen> {
               'https://i.pinimg.com/originals/3f/35/fa/3f35fac58640593b47b4d5654c8203f2.jpg', // Background image URL
             ),
             fit: BoxFit.cover,
-            opacity: 0.9,
+            opacity: 0.9, // Slightly transparent so the text is readable
           ),
         ),
         child: FutureBuilder<List<Joke>>(
-          future: jokeService.getJokesByType(widget.type),
+          future: firebaseService.getFavoriteJokes(), // Fetch favorite jokes from Firebase
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return const Center(child: Text('Failed to load jokes'));
+              return const Center(child: Text('Failed to load favorite jokes'));
             } else {
-              final jokes = snapshot.data!;
+              final jokes = snapshot.data ?? [];
               return ListView.builder(
                 itemCount: jokes.length,
                 itemBuilder: (context, index) {
                   final joke = jokes[index];
-                  final isFavorited = favoritedJokes.contains(index);
-
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Card(
@@ -56,7 +45,7 @@ class _JokesListScreenState extends State<JokesListScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
                       ),
-                      color: Colors.yellow[100],
+                      color: Colors.yellow[100], // Light yellow background for the card
                       child: Container(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
@@ -77,24 +66,6 @@ class _JokesListScreenState extends State<JokesListScreen> {
                                 fontSize: 16.0,
                                 color: Colors.black87,
                               ),
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                isFavorited
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: isFavorited ? Colors.red : Colors.grey,
-                              ),
-                              onPressed: () async {
-                                await firebaseService.saveFavoriteJoke(joke);
-                                setState(() {
-                                  if (isFavorited) {
-                                    favoritedJokes.remove(index);
-                                  } else {
-                                    favoritedJokes.add(index);
-                                  }
-                                });
-                              },
                             ),
                           ],
                         ),

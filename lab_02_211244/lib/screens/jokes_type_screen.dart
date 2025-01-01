@@ -7,15 +7,17 @@ import 'random_joke_screen.dart';
 class JokesTypeScreen extends StatelessWidget {
   final JokeService jokeService = JokeService();
 
+  JokesTypeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Joke Types'),
+        title: const Text('Joke types'),
         backgroundColor: Colors.yellow[100], // App bar color
         actions: [
           IconButton(
-            icon: Icon(Icons.lightbulb),
+            icon: const Icon(Icons.lightbulb),
             onPressed: () {
               Navigator.push(
                 context,
@@ -26,7 +28,7 @@ class JokesTypeScreen extends StatelessWidget {
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(
               'https://i.pinimg.com/originals/3f/35/fa/3f35fac58640593b47b4d5654c8203f2.jpg', // Laughing emoji image URL
@@ -39,16 +41,16 @@ class JokesTypeScreen extends StatelessWidget {
           future: jokeService.getJokeTypes(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return Center(child: Text('Failed to load joke types'));
+              return const Center(child: Text('Failed to load joke types'));
             } else {
               final jokeTypes = snapshot.data!;
               return ListView.builder(
                 itemCount: jokeTypes.length,
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: Card(
                       color: Colors.yellow[100], 
                       elevation: 8.0,

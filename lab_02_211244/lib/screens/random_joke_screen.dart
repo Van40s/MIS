@@ -5,15 +5,17 @@ import '../models/jokes.dart';
 class RandomJokeScreen extends StatelessWidget {
   final JokeService jokeService = JokeService();
 
+  RandomJokeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Random Joke of the Day'),
+        title: const Text('Random Joke of the Day'),
         backgroundColor: Colors.yellow[100], // Set AppBar color here
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(
               'https://i.pinimg.com/originals/3f/35/fa/3f35fac58640593b47b4d5654c8203f2.jpg', // Laughing emoji image URL
@@ -26,9 +28,9 @@ class RandomJokeScreen extends StatelessWidget {
           future: jokeService.getRandomJoke(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return Center(child: Text('Failed to load random joke'));
+              return const Center(child: Text('Failed to load random joke'));
             } else {
               final joke = snapshot.data!;
               return Center(
@@ -39,22 +41,22 @@ class RandomJokeScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10.0), // Rounded corners
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           joke.setup,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(height: 10.0),
+                        const SizedBox(height: 10.0),
                         Text(
                           joke.punchline,
-                          style: TextStyle(fontSize: 16.0),
+                          style: const TextStyle(fontSize: 16.0),
                           textAlign: TextAlign.center,
                         ),
                       ],

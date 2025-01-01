@@ -5,7 +5,7 @@ class JokeCard extends StatelessWidget {
   final Color? color;
   final VoidCallback onTap;
 
-  JokeCard({required this.jokeType, this.color, required this.onTap});
+  const JokeCard({super.key, required this.jokeType, this.color, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -13,13 +13,13 @@ class JokeCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         color: color, // Apply the passed color here
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               jokeType,
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
           ],
         ),
