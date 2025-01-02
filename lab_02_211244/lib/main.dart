@@ -11,6 +11,19 @@ import 'package:lab_02_211244/providers/password_visibility_provider.dart';
 import 'package:lab_02_211244/providers/joke_provider.dart';
 import 'package:lab_02_211244/screens/favorites_jokes_screen.dart';
 import 'package:lab_02_211244/services/firebase_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // Handle background messages
+  print('Handling a background message: ${message.messageId}');
+}
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +46,17 @@ void main() async {
     print("Error initializing Firebase: $e");
   }
 
+  // Initialize Firebase Messaging
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // Initialize Local Notifications
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  const InitializationSettings initializationSettings =
+      InitializationSettings(android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+
   // Run the app
   runApp(const MyApp());
 }
@@ -42,6 +66,33 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+      // Request permissions for iOS (if required)
+      messaging.requestPermission();
+
+      // Handle foreground notifications
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        RemoteNotification? notification = message.notification;
+        AndroidNotification? android = message.notification?.android;
+
+        if (notification != null && android != null) {
+          flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            const NotificationDetails(
+              android: AndroidNotificationDetails(
+                'channel_id', // Channel ID
+                'channel_name', // Channel Name
+                importance: Importance.high,
+                priority: Priority.high,
+              ),
+            ),
+          );
+        }
+      });
+
     return MultiProvider(
       providers: [
         // Provide AuthService for authentication across the app
