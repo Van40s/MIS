@@ -4,6 +4,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lab_04_211244_v2/page/exam_list_page.dart'; // Import the Exam List Page
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +31,31 @@ void main() async {
   } catch (e) {
     print("Error initializing Firebase: $e");
   }
+
+  // Android initialization settings
+  const AndroidInitializationSettings androidInitializationSettings =
+      AndroidInitializationSettings('notification_icon'); // Matches your icon name in res/drawable
+
+  // iOS initialization settings
+  const DarwinInitializationSettings iOSInitializationSettings =
+      DarwinInitializationSettings();
+
+  // Combine platform-specific initialization settings
+  const InitializationSettings initializationSettings =
+      InitializationSettings(
+    android: androidInitializationSettings,
+    iOS: iOSInitializationSettings,
+  );
+
+  // Initialize the plugin
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: (NotificationResponse response) {
+      // Handle notification taps
+      print('Notification payload: ${response.payload}');
+    },
+  );
+
   runApp(const MyApp());
 }
 

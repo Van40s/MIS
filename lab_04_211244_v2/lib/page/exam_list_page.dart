@@ -7,6 +7,9 @@ import 'package:lab_04_211244_v2/service/firebase_service.dart';
 // import 'package:lab_04_211244_v2/service/location_service.dart';
 import 'package:lab_04_211244_v2/page/add_exam_page.dart';
 import 'package:lab_04_211244_v2/page/route_map_page.dart';
+import 'dart:async';
+import 'package:lab_04_211244_v2/service/notification_service.dart';
+
 
 class ExamListPage extends StatefulWidget {
   @override
@@ -18,6 +21,9 @@ class _ExamListPageState extends State<ExamListPage> {
   List<Exam>_examEvents = List.empty();
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  final NotificationService notificationService = NotificationService();
+
+  late Timer timer;
 
   @override
   void initState() {
@@ -59,6 +65,19 @@ class _ExamListPageState extends State<ExamListPage> {
     );
   }
 
+  void _setReminder(BuildContext context, Exam exam) async {
+    try {
+      await notificationService.setReminder(exam);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Reminder set for ${exam.title}!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to set reminder: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,9 +110,18 @@ class _ExamListPageState extends State<ExamListPage> {
                       return ListTile(
                         title: Text(exam.title),
                         subtitle: Text('${exam.datetime.toLocal()}'), 
-                        trailing: IconButton(
-                          icon: Icon(Icons.map),
-                          onPressed: () => _openMap(exam), // Open map on button press
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.map),
+                              onPressed: () => _openMap(exam), // Open map on button press
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.alarm),
+                              onPressed: () => _setReminder(context, exam), // Set reminder
+                            ),
+                          ],
                         ),// Display DateTime in local format
                       );
                     },
