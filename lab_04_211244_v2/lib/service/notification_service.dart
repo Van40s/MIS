@@ -45,7 +45,7 @@ class NotificationService {
 
       // If within radius, trigger notification
       if (distance <= radius) {
-        _showNotification(
+        showNotification(
           title: 'Reminder: ${exam.title}',
           body: 'You are near the location for ${exam.title}.',
         );
@@ -68,15 +68,7 @@ class NotificationService {
     }
   }
 
-  Future<void> _showNotification({required String title, required String body}) async {
-    // const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    //     AndroidNotificationDetails(
-    //   'reminder_channel',
-    //   'Reminders',
-    //   channelDescription: 'Notifications for location-based reminders',
-    //   importance: Importance.high,
-    //   priority: Priority.high,
-    // );
+  Future<void> showNotification({required String title, required String body}) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'channel_id',
